@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnChangeStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="切换样式" />
+
+            <Button
+                android:id="@+id/btnChangeMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="切换显示模式" />
+        </LinearLayout>
+
+        <com.al.open.SplitEditTextView
+            android:id="@+id/splitEdit1"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="30dp"
+            app:borderColor="@color/colorPrimaryDark"
+            app:borderSize="2dp"
+            app:contentNumber="4"
+            android:textSize="20sp"
+            android:textColor="@color/colorPrimary"
+            app:contentShowMode="password"
+            app:cornerSize="10dp"
+            app:inputBoxStyle="singleBox"
+            app:spaceSize="20dp" />
+
+        <com.al.open.SplitEditTextView
+            android:id="@+id/splitEdit2"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="30dp"
+            app:divisionLineColor="@color/colorAccent"
+            app:inputBoxStyle="connectBox" />
+
+        <com.al.open.SplitEditTextView
+            android:id="@+id/splitEdit3"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="30dp"
+            app:borderColor="@color/colorPrimary"
+            app:borderSize="2dp"
+            app:contentNumber="5"
+            app:contentShowMode="text"
+            app:inputBoxStyle="underline"
+            app:spaceSize="20dp" />
+    </LinearLayout>
+
+</ScrollView>

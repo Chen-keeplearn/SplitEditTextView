@@ -1,0 +1,3 @@
+include ':SplitEditTextView'
+include ':demo'
+rootProject.name = "SplitEditTextView"
