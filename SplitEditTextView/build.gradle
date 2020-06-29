@@ -30,3 +30,24 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
 }
+
+apply plugin: 'maven'
+apply plugin: 'com.novoda.bintray-release'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.novoda:bintray-release:0.9.1'
+    }
+}
+
+publish {
+    userOrg = 'keeplearn'
+    groupId = 'com.open.keeplearn'
+    artifactId = 'SplitEditTextView'
+    publishVersion = '1.0.0'
+    desc = 'A Library Of Android UI.'
+    website = 'https://github.com/Chen-keeplearn/SplitEditTextView'
+}
