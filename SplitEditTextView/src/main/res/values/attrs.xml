@@ -39,6 +39,16 @@
         <attr name="android:textColor" />
         <!--密码字体大小-->
         <attr name="android:textSize" />
+        <!--输入框是否是正方形-->
+        <attr name="inputBoxSquare" format="boolean" />
+        <!--光标宽度-->
+        <attr name="cursorWidth" format="dimension" />
+        <!--光标高度-->
+        <attr name="cursorHeight" format="dimension" />
+        <!--光标颜色-->
+        <attr name="cursorColor" format="color|reference" />
+        <!--光标闪烁时长-->
+        <attr name="cursorDuration" format="integer" />
 
     </declare-styleable>
 

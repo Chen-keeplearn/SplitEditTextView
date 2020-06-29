@@ -8,7 +8,9 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:padding="16dp">
@@ -39,35 +41,43 @@
         <com.al.open.SplitEditTextView
             android:id="@+id/splitEdit1"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="500dp"
             android:layout_marginTop="30dp"
+            android:inputType="number"
+            android:textColor="@color/colorPrimary"
+            android:textSize="30sp"
             app:borderColor="@color/colorPrimaryDark"
             app:borderSize="2dp"
             app:contentNumber="4"
-            android:textSize="20sp"
-            android:textColor="@color/colorPrimary"
             app:contentShowMode="password"
             app:cornerSize="10dp"
+            app:cursorColor="@color/colorAccent"
+            app:cursorWidth="20dp"
+            app:inputBoxSquare="true"
             app:inputBoxStyle="singleBox"
             app:spaceSize="20dp" />
 
         <com.al.open.SplitEditTextView
             android:id="@+id/splitEdit2"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="200dp"
             android:layout_marginTop="30dp"
+            android:textSize="25sp"
+            app:cursorColor="@color/colorPrimary"
+            app:cursorHeight="20dp"
             app:divisionLineColor="@color/colorAccent"
             app:inputBoxStyle="connectBox" />
 
         <com.al.open.SplitEditTextView
             android:id="@+id/splitEdit3"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="100dp"
             android:layout_marginTop="30dp"
             app:borderColor="@color/colorPrimary"
             app:borderSize="2dp"
             app:contentNumber="5"
             app:contentShowMode="text"
+            app:cursorDuration="1000"
             app:inputBoxStyle="underline"
             app:spaceSize="20dp" />
     </LinearLayout>

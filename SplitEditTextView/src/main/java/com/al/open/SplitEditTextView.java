@@ -7,8 +7,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.text.InputFilter;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.InflateException;
 
 import androidx.appcompat.widget.AppCompatEditText;
 
@@ -23,10 +25,11 @@ public class SplitEditTextView extends AppCompatEditText {
     public static final int INPUT_BOX_STYLE_SINGLE = 2;
     //下划线输入框样式
     public static final int INPUT_BOX_STYLE_UNDERLINE = 3;
+    //画笔
     private RectF mRectFConnect;
     private RectF mRectFSingleBox;
     private Paint mPaintDivisionLine;
-    private Paint mPaintPassword;
+    private Paint mPaintContent;
     private Paint mPaintBorder;
     //边框大小
     private Float mBorderSize = dp2px(1f);
@@ -52,12 +55,22 @@ public class SplitEditTextView extends AppCompatEditText {
     private float mTextSize = sp2px(16f);
     //字体颜色
     private int mTextColor = Color.BLACK;
+    //每个输入框是否是正方形标识
+    private boolean mInputBoxSquare;
+    private OnInputListener inputListener;
+    private Paint mPaintCursor;
+    private CursorRunnable cursorRunnable;
 
+    private int mCursorColor;//光标颜色
+    private float mCursorWidth;//光标宽度
+    private int mCursorHeight;//光标高度
+    private int mCursorDuration;//光标闪烁时长
 
     public SplitEditTextView(Context context) {
         this(context, null);
     }
 
+    //这里没有写成默认的EditText属性样式android.R.attr.editTextStyle,这样会存在EditText默认的样式
     public SplitEditTextView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
@@ -81,6 +94,11 @@ public class SplitEditTextView extends AppCompatEditText {
         mSpaceSize = array.getDimension(R.styleable.SplitEditTextView_spaceSize, dp2px(10f));
         mTextSize = array.getDimension(R.styleable.SplitEditTextView_android_textSize, sp2px(16f));
         mTextColor = array.getColor(R.styleable.SplitEditTextView_android_textColor, Color.BLACK);
+        mInputBoxSquare = array.getBoolean(R.styleable.SplitEditTextView_inputBoxSquare, true);
+        mCursorColor = array.getColor(R.styleable.SplitEditTextView_cursorColor, Color.BLACK);
+        mCursorDuration = array.getInt(R.styleable.SplitEditTextView_cursorDuration, 500);
+        mCursorWidth = array.getDimension(R.styleable.SplitEditTextView_cursorWidth, dp2px(2f));
+        mCursorHeight = (int) array.getDimension(R.styleable.SplitEditTextView_cursorHeight, 0);
         array.recycle();
         init();
     }
@@ -96,28 +114,63 @@ public class SplitEditTextView extends AppCompatEditText {
         mPaintDivisionLine.setStrokeWidth(mDivisionLineSize);
         mPaintDivisionLine.setColor(mDivisionColor);
 
-        mPaintPassword = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mPaintPassword.setTextSize(mTextSize);
+        mPaintContent = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mPaintContent.setTextSize(mTextSize);
+
+        mPaintCursor = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mPaintCursor.setStrokeWidth(mCursorWidth);
+        mPaintCursor.setColor(mCursorColor);
+
 
         //避免onDraw里面重复创建RectF对象,先初始化RectF对象,在绘制时调用set()方法
         //单个输入框样式的RectF
         mRectFSingleBox = new RectF();
         //绘制Connect样式的矩形框
         mRectFConnect = new RectF();
-
-        requestFocus();
-
+        //设置单行输入
         setSingleLine();
 
-        setFocusable(true);
-
+        //若构造方法中没有写成android.R.attr.editTextStyle的属性,应该需要设置该属性,EditText默认是获取焦点的
         setFocusableInTouchMode(true);
+
+        //取消默认的光标
+        setCursorVisible(false);
+        //设置InputFilter,设置输入的最大字符长度为设置的长度
+        setFilters(new InputFilter[]{new InputFilter.LengthFilter(mContentNumber)});
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        cursorRunnable = new CursorRunnable();
+        postDelayed(cursorRunnable, mCursorDuration);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        removeCallbacks(cursorRunnable);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        //int sizeHeight = MeasureSpec.getSize(heightMeasureSpec);
+
+        if (mInputBoxSquare) {
+            int width = MeasureSpec.getSize(widthMeasureSpec);
+            //计算view高度,使view高度和每个item的宽度相等,确保每个item是一个正方形
+            float itemWidth = getContentItemWidthOnMeasure(width);
+            switch (mInputBoxStyle) {
+                case INPUT_BOX_STYLE_UNDERLINE:
+                    setMeasuredDimension(width, (int) (itemWidth + mBorderSize));
+                    break;
+                case INPUT_BOX_STYLE_SINGLE:
+                case INPUT_BOX_STYLE_CONNECT:
+                default:
+                    setMeasuredDimension(width, (int) (itemWidth + mBorderSize * 2));
+                    break;
+            }
+        }
     }
 
     @Override
@@ -135,35 +188,65 @@ public class SplitEditTextView extends AppCompatEditText {
                 drawConnectStyle(canvas);
                 break;
         }
-        //绘制密码框内的密码圆圈
-        drawPassword(canvas);
+        //绘制输入框内容
+        drawContent(canvas);
+        //绘制光标
+        drawCursor(canvas);
     }
 
     /**
      * 根据密码显示模式,绘制密码是圆心还是明文的text
      */
-    private void drawPassword(Canvas canvas) {
-        float cy = getHeight() / 2;
+    private void drawContent(Canvas canvas) {
+        int cy = getHeight() / 2;
         String password = getText().toString().trim();
         if (mContentShowMode == CONTENT_SHOW_MODE_PASSWORD) {
-            mPaintPassword.setColor(Color.BLACK);
+            mPaintContent.setColor(Color.BLACK);
             for (int i = 0; i < password.length(); i++) {
-                float startX = getDrawTextStartX(i);
-                canvas.drawCircle(startX, cy, mCircleRadius, mPaintPassword);
+                float startX = getDrawContentStartX(i);
+                canvas.drawCircle(startX, cy, mCircleRadius, mPaintContent);
             }
         } else {
-            mPaintPassword.setColor(mTextColor);
+            mPaintContent.setColor(mTextColor);
             //计算baseline
-            float baselineText = getTextBaseline(mPaintPassword, cy);
+            float baselineText = getTextBaseline(mPaintContent, cy);
             for (int i = 0; i < password.length(); i++) {
-                float startX = getDrawTextStartX(i);
+                float startX = getDrawContentStartX(i);
                 //计算文字宽度
                 String text = String.valueOf(password.charAt(i));
-                float textWidth = mPaintPassword.measureText(text);
+                float textWidth = mPaintContent.measureText(text);
                 //绘制文字x应该还需要减去文字宽度的一半
-                canvas.drawText(text, startX - textWidth / 2, baselineText, mPaintPassword);
+                canvas.drawText(text, startX - textWidth / 2, baselineText, mPaintContent);
             }
         }
+    }
+
+    /**
+     * 绘制光标
+     * 光标只有一个,所以不需要根据循环来绘制,只需绘制第N个就行
+     * 即:
+     * 当输入内容长度为0,光标在第0个位置
+     * 当输入内容长度为1,光标应在第1个位置
+     * ...
+     * 所以光标所在位置为输入内容的长度
+     * 这里光标的长度默认就是 height/2
+     */
+    private void drawCursor(Canvas canvas) {
+        if (mCursorHeight > getHeight()) {
+            throw new InflateException("cursor height must smaller than view height");
+        }
+        String content = getText().toString().trim();
+        float startX = getDrawContentStartX(content.length());
+        //如果设置得有光标高度,那么startY = (高度-光标高度)/2+边框宽度
+        if (mCursorHeight == 0) {
+            mCursorHeight = getHeight() / 2;
+        }
+        int sy = (getHeight() - mCursorHeight) / 2;
+        float startY = sy + mBorderSize;
+        float stopY = getHeight() - sy - mBorderSize;
+
+        //此时的绘制光标竖直线,startX = stopX
+        canvas.drawLine(startX, startY, startX, stopY, mPaintCursor);
     }
 
     /**
@@ -172,7 +255,7 @@ public class SplitEditTextView extends AppCompatEditText {
      *
      * @param index 循环里面的下标 i
      */
-    private float getDrawTextStartX(int index) {
+    private float getDrawContentStartX(int index) {
         switch (mInputBoxStyle) {
             case INPUT_BOX_STYLE_SINGLE:
                 //单个输入框样式下的startX
@@ -180,16 +263,16 @@ public class SplitEditTextView extends AppCompatEditText {
                 //   i = 0,左侧1个边框
                 //   i = 1,左侧3个边框(一个完整的item的左右边框+ 一个左侧边框)
                 //   i = ..., (2*i+1)*mBorderSize
-                return getPasswordItemWidth() / 2 + index * getPasswordItemWidth() + index * mSpaceSize + (2 * index + 1) * mBorderSize;
+                return getContentItemWidth() / 2 + index * getContentItemWidth() + index * mSpaceSize + (2 * index + 1) * mBorderSize;
             case INPUT_BOX_STYLE_UNDERLINE:
                 //下划线输入框样式下的startX
                 //即 itemWidth/2 + i*itemWidth + i*每一个间距宽度
-                return getPasswordItemWidth() / 2 + index * mSpaceSize + index * getPasswordItemWidth();
+                return getContentItemWidth() / 2 + index * mSpaceSize + index * getContentItemWidth();
             case INPUT_BOX_STYLE_CONNECT:
                 //矩形输入框样式下的startX
                 //即 itemWidth/2 + i*itemWidth + i*分割线宽度 + 左侧的一个边框宽度
             default:
-                return getPasswordItemWidth() / 2 + index * getPasswordItemWidth() + index * mDivisionLineSize + mBorderSize;
+                return getContentItemWidth() / 2 + index * getContentItemWidth() + index * mDivisionLineSize + mBorderSize;
         }
     }
 
@@ -202,9 +285,9 @@ public class SplitEditTextView extends AppCompatEditText {
     private void drawUnderlineStyle(Canvas canvas) {
         for (int i = 0; i < mContentNumber; i++) {
             //计算绘制下划线的startX
-            float startX = i * getPasswordItemWidth() + i * mSpaceSize;
+            float startX = i * getContentItemWidth() + i * mSpaceSize;
             //stopX
-            float stopX = getPasswordItemWidth() + startX;
+            float stopX = getContentItemWidth() + startX;
             //对于下划线这种样式,startY = stopY
             float startY = getHeight() - mBorderSize / 2;
             canvas.drawLine(startX, startY, stopX, startY, mPaintBorder);
@@ -233,8 +316,8 @@ public class SplitEditTextView extends AppCompatEditText {
     private void drawSingleStyle(Canvas canvas) {
         for (int i = 0; i < mContentNumber; i++) {
             mRectFSingleBox.setEmpty();
-            float left = i * getPasswordItemWidth() + i * mSpaceSize + i * mBorderSize * 2 + mBorderSize / 2;
-            float right = i * mSpaceSize + (i + 1) * getPasswordItemWidth() + (i + 1) * 2 * mBorderSize - mBorderSize / 2;
+            float left = i * getContentItemWidth() + i * mSpaceSize + i * mBorderSize * 2 + mBorderSize / 2;
+            float right = i * mSpaceSize + (i + 1) * getContentItemWidth() + (i + 1) * 2 * mBorderSize - mBorderSize / 2;
             //为避免在onDraw里面创建RectF对象,这里使用rectF.set()方法
             mRectFSingleBox.set(left, mBorderSize / 2, right, getHeight() - mBorderSize / 2);
             canvas.drawRoundRect(mRectFSingleBox, mBorderCorner, mBorderCorner, mPaintBorder);
@@ -275,7 +358,7 @@ public class SplitEditTextView extends AppCompatEditText {
         float stopY = getHeight() - mBorderSize;
         for (int i = 0; i < mContentNumber - 1; i++) {
             //对于分割线条,startX = stopX
-            float startX = (i + 1) * getPasswordItemWidth() + i * mDivisionLineSize + mBorderSize + mDivisionLineSize / 2;
+            float startX = (i + 1) * getContentItemWidth() + i * mDivisionLineSize + mBorderSize + mDivisionLineSize / 2;
             canvas.drawLine(startX, mBorderSize, startX, stopY, mPaintDivisionLine);
         }
     }
@@ -283,7 +366,7 @@ public class SplitEditTextView extends AppCompatEditText {
     /**
      * 计算3种样式下,相应每个字符item的宽度
      */
-    private float getPasswordItemWidth() {
+    private float getContentItemWidth() {
         //计算每个密码字符所占的宽度,每种输入框样式下,每个字符item所占宽度也不一样
         float tempWidth;
         switch (mInputBoxStyle) {
@@ -299,6 +382,33 @@ public class SplitEditTextView extends AppCompatEditText {
                 //矩形输入框样式：宽度-左右两边框宽度-分割线宽度(字符数-1)*每个分割线宽度
             default:
                 tempWidth = getWidth() - (mDivisionLineSize * (mContentNumber - 1)) - 2 * mBorderSize;
+                break;
+        }
+        return tempWidth / mContentNumber;
+    }
+
+    /**
+     * 根据view的测量宽度,计算每个item的宽度
+     *
+     * @param measureWidth view的measure
+     * @return onMeasure时的每个item宽度
+     */
+    private float getContentItemWidthOnMeasure(int measureWidth) {
+        //计算每个密码字符所占的宽度,每种输入框样式下,每个字符item所占宽度也不一样
+        float tempWidth;
+        switch (mInputBoxStyle) {
+            case INPUT_BOX_STYLE_SINGLE:
+                //单个输入框样式：宽度-间距宽度(字符数-1)*每个间距宽度-每个输入框的左右边框宽度
+                tempWidth = measureWidth - (mContentNumber - 1) * mSpaceSize - 2 * mContentNumber * mBorderSize;
+                break;
+            case INPUT_BOX_STYLE_UNDERLINE:
+                //下划线样式：宽度-间距宽度(字符数-1)*每个间距宽度
+                tempWidth = measureWidth - (mContentNumber - 1) * mSpaceSize;
+                break;
+            case INPUT_BOX_STYLE_CONNECT:
+                //矩形输入框样式：宽度-左右两边框宽度-分割线宽度(字符数-1)*每个分割线宽度
+            default:
+                tempWidth = measureWidth - (mDivisionLineSize * (mContentNumber - 1)) - 2 * mBorderSize;
                 break;
         }
         return tempWidth / mContentNumber;
@@ -322,9 +432,9 @@ public class SplitEditTextView extends AppCompatEditText {
     public void setContentShowMode(int mode) {
         if (mode != CONTENT_SHOW_MODE_PASSWORD && mode != CONTENT_SHOW_MODE_TEXT) {
             throw new IllegalArgumentException(
-                    "the value of the parameter must be " +
-                            "1 (EDIT_SHOW_MODE_PASSWORD) or " +
-                            "2 (EDIT_SHOW_MODE_TEXT)"
+                    "the value of the parameter must be one of" +
+                            "{1:EDIT_SHOW_MODE_PASSWORD} or " +
+                            "{2:EDIT_SHOW_MODE_TEXT}"
             );
         }
         mContentShowMode = mode;
@@ -347,14 +457,39 @@ public class SplitEditTextView extends AppCompatEditText {
                 && inputBoxStyle != INPUT_BOX_STYLE_UNDERLINE
         ) {
             throw new IllegalArgumentException(
-                    "the value of the parameter must be " +
-                            "1 (INPUT_BOX_STYLE_CONNECT) " +
-                            "2 (INPUT_BOX_STYLE_SINGLE) or " +
-                            "3 (INPUT_BOX_STYLE_UNDERLINE)"
+                    "the value of the parameter must be one of" +
+                            "{1:INPUT_BOX_STYLE_CONNECT}, " +
+                            "{2:INPUT_BOX_STYLE_SINGLE} or " +
+                            "{3:INPUT_BOX_STYLE_UNDERLINE}"
             );
         }
         mInputBoxStyle = inputBoxStyle;
-        invalidate();
+        // 这里没有调用invalidate因为会存在问题
+        // invalidate会重绘,但是不会去重新测量,当输入框样式切换的之后,item的宽度其实是有变化的,所以此时需要重新测量
+        // requestLayout,调用onMeasure和onLayout,不一定会调用onDraw,当view的l,t,r,b发生改变时会调用onDraw
+        requestLayout();
+        //invalidate();
+    }
+
+    public void setOnInputListener(OnInputListener listener) {
+        this.inputListener = listener;
+    }
+
+    /**
+     * 通过复写onTextChanged来实现对输入的监听
+     * 如果在onDraw里面监听text的输入长度来实现,会重复的调用该方法,就不妥当
+     */
+    @Override
+    protected void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
+        super.onTextChanged(text, start, lengthBefore, lengthAfter);
+        String content = text.toString().trim();
+        if (inputListener != null) {
+            if (content.length() == mContentNumber) {
+                inputListener.onInputFinished(content);
+            } else {
+                inputListener.onInputChanged(content);
+            }
+        }
     }
 
     /**
@@ -378,5 +513,22 @@ public class SplitEditTextView extends AppCompatEditText {
                 spValue,
                 Resources.getSystem().getDisplayMetrics()
         );
+    }
+
+    /**
+     * 光标Runnable
+     * 通过Runnable每500ms执行重绘,每次runnable通过改变画笔的alpha值来使光标产生闪烁的效果
+     */
+    private class CursorRunnable implements Runnable {
+
+        @Override
+        public void run() {
+            //获取光标画笔的alpha值
+            int alpha = mPaintCursor.getAlpha();
+            //设置光标画笔的alpha值
+            mPaintCursor.setAlpha(alpha == 0 ? 255 : 0);
+            invalidate();
+            postDelayed(this, mCursorDuration);
+        }
     }
 }

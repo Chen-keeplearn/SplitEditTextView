@@ -2,6 +2,8 @@ package com.al.split_edit_text_view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
+import com.al.open.OnInputListener
 import com.al.open.SplitEditTextView
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -66,5 +68,27 @@ class MainActivity : AppCompatActivity() {
                 splitEdit3.contentShowMode = SplitEditTextView.CONTENT_SHOW_MODE_PASSWORD
             }
         }
+
+
+        splitEdit1.setOnInputListener(object : OnInputListener() {
+            override fun onInputFinished(content: String?) {
+                Toast.makeText(this@MainActivity,content,Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onInputChanged(text: String?) {
+                //Toast.makeText(this@MainActivity,text,Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        /*splitEdit1.setOnInputFinishedListener {
+            Toast.makeText(this,it,Toast.LENGTH_SHORT).show();
+        }
+        splitEdit2.setOnInputFinishedListener {
+            Toast.makeText(this,it,Toast.LENGTH_SHORT).show();
+        }
+        splitEdit3.setOnInputFinishedListener {
+            Toast.makeText(this,it,Toast.LENGTH_SHORT).show();
+        }*/
+
     }
 }
