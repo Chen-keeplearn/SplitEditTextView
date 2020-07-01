@@ -6,6 +6,7 @@ Android类似支付宝密码输入框，美团外卖验证码输入框等等支�
 ![image](https://github.com/Chen-keeplearn/SplitEditTextView/blob/other/screenshot/SplitEditTextView_Gif.gif)
 # 如何使用
 **第一步 依赖**
+
 首先将SplitEditTextView引入到您的项目中，如下：
 ``` groovy
 dependencies {
