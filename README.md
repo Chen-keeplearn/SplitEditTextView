@@ -7,7 +7,7 @@ Android类似支付宝密码输入框，美团外卖验证码输入框等等支�
 # 如何使用
 **第一步 依赖**
 
-首先将SplitEditTextView引入到您的项目中，如下：
+首先将SplitEditTextView引入到您的项目中，在build.gradle文件中添加依赖，如下：
 ``` groovy
 dependencies {
    ...
@@ -64,7 +64,36 @@ android:focusableInTouchMode="true"
         app:inputBoxStyle="underline"
         app:spaceSize="20dp" />
 
- </LinearLayout>
+</LinearLayout>
+```
+**第三步 代码中实现对内容输入完毕的监听**
+
+在kotlin代码中：
+``` kotlin
+splitEdit1.setOnInputListener(object : OnInputListener() {
+    override fun onInputFinished(content: String?) {
+        //内容输入完毕
+        Toast.makeText(this@MainActivity,content,Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onInputChanged(text: String?) {
+        //可选择性重写该方法
+    }
+})
+```
+在java代码中：
+``` java
+splitEditTextView.setOnInputListener(new OnInputListener() {
+    @Override
+    public void onInputFinished(String content) {
+        //内容输入完毕
+    }
+
+    @Override
+    public void onInputChanged(String text) {
+        //可选择重写该方法
+    }
+});
 ```
 # 关于属性
 | 属性名称 | 属性说明 | 默认值 |
