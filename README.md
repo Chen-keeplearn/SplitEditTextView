@@ -66,7 +66,7 @@ android:focusableInTouchMode="true"
 
  </LinearLayout>
 ```
-# 属性说明
+# 关于属性
 | 属性名称 | 属性说明 | 默认值 |
 |----------|---------|--------|
 | borderSize| 边框宽度 | 1dp |
