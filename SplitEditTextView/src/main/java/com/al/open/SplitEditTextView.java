@@ -31,30 +31,31 @@ public class SplitEditTextView extends AppCompatEditText {
     private Paint mPaintDivisionLine;
     private Paint mPaintContent;
     private Paint mPaintBorder;
+    private Paint mPaintUnderline;
     //边框大小
-    private Float mBorderSize = dp2px(1f);
+    private Float mBorderSize;
     //边框颜色
-    private int mBorderColor = Color.BLACK;
+    private int mBorderColor;
     //圆角大小
-    private float mBorderCorner = 0f;
+    private float mCornerSize;
     //分割线大小
-    private float mDivisionLineSize = dp2px(1f);
+    private float mDivisionLineSize;
     //分割线颜色
-    private int mDivisionColor = Color.BLACK;
+    private int mDivisionColor;
     //圆形密码的半径大小
-    private float mCircleRadius = dp2px(5f);
+    private float mCircleRadius;
     //密码框长度
-    private int mContentNumber = 6;
+    private int mContentNumber;
     //密码显示模式
-    private int mContentShowMode = CONTENT_SHOW_MODE_PASSWORD;
+    private int mContentShowMode;
     //单框和下划线输入样式下,每个输入框的间距
-    private float mSpaceSize = dp2px(10f);
+    private float mSpaceSize;
     //输入框样式
-    private int mInputBoxStyle = INPUT_BOX_STYLE_CONNECT;
+    private int mInputBoxStyle;
     //字体大小
-    private float mTextSize = sp2px(16f);
+    private float mTextSize;
     //字体颜色
-    private int mTextColor = Color.BLACK;
+    private int mTextColor;
     //每个输入框是否是正方形标识
     private boolean mInputBoxSquare;
     private OnInputListener inputListener;
@@ -65,6 +66,9 @@ public class SplitEditTextView extends AppCompatEditText {
     private float mCursorWidth;//光标宽度
     private int mCursorHeight;//光标高度
     private int mCursorDuration;//光标闪烁时长
+
+    private int mUnderlineFocusColor;//下划线输入样式下,输入框获取焦点时下划线颜色
+    private int mUnderlineNormalColor;//下划线输入样式下,下划线颜色
 
     public SplitEditTextView(Context context) {
         this(context, null);
@@ -83,10 +87,10 @@ public class SplitEditTextView extends AppCompatEditText {
     private void initAttrs(Context c, AttributeSet attrs) {
         TypedArray array = c.obtainStyledAttributes(attrs, R.styleable.SplitEditTextView);
         mBorderSize = array.getDimension(R.styleable.SplitEditTextView_borderSize, dp2px(1f));
-        mBorderColor = array.getColor(R.styleable.SplitEditTextView_borderColor, Color.BLUE);
-        mBorderCorner = array.getDimension(R.styleable.SplitEditTextView_cornerSize, 0f);
+        mBorderColor = array.getColor(R.styleable.SplitEditTextView_borderColor, Color.BLACK);
+        mCornerSize = array.getDimension(R.styleable.SplitEditTextView_cornerSize, 0f);
         mDivisionLineSize = array.getDimension(R.styleable.SplitEditTextView_divisionLineSize, dp2px(1f));
-        mDivisionColor = array.getColor(R.styleable.SplitEditTextView_divisionLineColor, Color.BLUE);
+        mDivisionColor = array.getColor(R.styleable.SplitEditTextView_divisionLineColor, Color.BLACK);
         mCircleRadius = array.getDimension(R.styleable.SplitEditTextView_circleRadius, dp2px(5f));
         mContentNumber = array.getInt(R.styleable.SplitEditTextView_contentNumber, 6);
         mContentShowMode = array.getInteger(R.styleable.SplitEditTextView_contentShowMode, CONTENT_SHOW_MODE_PASSWORD);
@@ -99,6 +103,8 @@ public class SplitEditTextView extends AppCompatEditText {
         mCursorDuration = array.getInt(R.styleable.SplitEditTextView_cursorDuration, 500);
         mCursorWidth = array.getDimension(R.styleable.SplitEditTextView_cursorWidth, dp2px(2f));
         mCursorHeight = (int) array.getDimension(R.styleable.SplitEditTextView_cursorHeight, 0);
+        mUnderlineNormalColor = array.getInt(R.styleable.SplitEditTextView_underlineNormalColor, Color.BLACK);
+        mUnderlineFocusColor = array.getInt(R.styleable.SplitEditTextView_underlineFocusColor, 0);
         array.recycle();
         init();
     }
@@ -121,6 +127,10 @@ public class SplitEditTextView extends AppCompatEditText {
         mPaintCursor.setStrokeWidth(mCursorWidth);
         mPaintCursor.setColor(mCursorColor);
 
+        mPaintUnderline = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mPaintUnderline.setStrokeWidth(mBorderSize);
+        mPaintUnderline.setColor(mUnderlineNormalColor);
+
 
         //避免onDraw里面重复创建RectF对象,先初始化RectF对象,在绘制时调用set()方法
         //单个输入框样式的RectF
@@ -137,6 +147,7 @@ public class SplitEditTextView extends AppCompatEditText {
         setCursorVisible(false);
         //设置InputFilter,设置输入的最大字符长度为设置的长度
         setFilters(new InputFilter[]{new InputFilter.LengthFilter(mContentNumber)});
+        //setTextSelectHandleLeft(android.R.color.transparent);
     }
 
     @Override
@@ -148,8 +159,8 @@ public class SplitEditTextView extends AppCompatEditText {
 
     @Override
     protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
         removeCallbacks(cursorRunnable);
+        super.onDetachedFromWindow();
     }
 
     @Override
@@ -195,7 +206,7 @@ public class SplitEditTextView extends AppCompatEditText {
     }
 
     /**
-     * 根据密码显示模式,绘制密码是圆心还是明文的text
+     * 根据输入内容显示模式,绘制内容是圆心还是明文的text
      */
     private void drawContent(Canvas canvas) {
         int cy = getHeight() / 2;
@@ -251,7 +262,7 @@ public class SplitEditTextView extends AppCompatEditText {
 
     /**
      * 、
-     * 计算三种样式下绘制圆心和文字的x坐标
+     * 计算三种输入框样式下绘制圆和文字的x坐标
      *
      * @param index 循环里面的下标 i
      */
@@ -283,6 +294,7 @@ public class SplitEditTextView extends AppCompatEditText {
      * 线条终点stopX:stopX与startX之间就是一个itemWidth的宽度
      */
     private void drawUnderlineStyle(Canvas canvas) {
+        String content = getText().toString().trim();
         for (int i = 0; i < mContentNumber; i++) {
             //计算绘制下划线的startX
             float startX = i * getContentItemWidth() + i * mSpaceSize;
@@ -290,7 +302,15 @@ public class SplitEditTextView extends AppCompatEditText {
             float stopX = getContentItemWidth() + startX;
             //对于下划线这种样式,startY = stopY
             float startY = getHeight() - mBorderSize / 2;
-            canvas.drawLine(startX, startY, stopX, startY, mPaintBorder);
+            //这里判断是否设置有输入框获取焦点时,下划线的颜色
+            if (mUnderlineFocusColor != 0) {
+                if (content.length() >= i) {
+                    mPaintUnderline.setColor(mUnderlineFocusColor);
+                } else {
+                    mPaintUnderline.setColor(mUnderlineNormalColor);
+                }
+            }
+            canvas.drawLine(startX, startY, stopX, startY, mPaintUnderline);
         }
     }
 
@@ -320,7 +340,7 @@ public class SplitEditTextView extends AppCompatEditText {
             float right = i * mSpaceSize + (i + 1) * getContentItemWidth() + (i + 1) * 2 * mBorderSize - mBorderSize / 2;
             //为避免在onDraw里面创建RectF对象,这里使用rectF.set()方法
             mRectFSingleBox.set(left, mBorderSize / 2, right, getHeight() - mBorderSize / 2);
-            canvas.drawRoundRect(mRectFSingleBox, mBorderCorner, mBorderCorner, mPaintBorder);
+            canvas.drawRoundRect(mRectFSingleBox, mCornerSize, mCornerSize, mPaintBorder);
         }
     }
 
@@ -343,16 +363,18 @@ public class SplitEditTextView extends AppCompatEditText {
                 getWidth() - mBorderSize / 2,
                 getHeight() - mBorderSize / 2
         );
-        canvas.drawRoundRect(mRectFConnect, mBorderCorner, mBorderCorner, mPaintBorder);
+        canvas.drawRoundRect(mRectFConnect, mCornerSize, mCornerSize, mPaintBorder);
         //绘制分割线
         drawDivisionLine(canvas);
     }
 
     /**
-     * 分割线条数为密码框数目-1
+     * 分割线条数为内容框数目-1
      * 这里startX应该要加上左侧边框的宽度
      * 应该还需要加上分割线的一半
      * 至于startY和stopY不是 mBorderSize/2 而是 mBorderSize
+     * startX是计算整个宽度的,需要算上左侧的边框宽度,所以不是+mBorderSize/2 而是+mBorderSize
+     * startY和stopY：分割线是紧挨着边框内部的,所以应该是mBorderSize,而不是mBorderSize/2
      */
     private void drawDivisionLine(Canvas canvas) {
         float stopY = getHeight() - mBorderSize;

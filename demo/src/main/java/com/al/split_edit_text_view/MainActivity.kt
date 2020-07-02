@@ -80,15 +80,18 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        /*splitEdit1.setOnInputFinishedListener {
-            Toast.makeText(this,it,Toast.LENGTH_SHORT).show();
-        }
-        splitEdit2.setOnInputFinishedListener {
-            Toast.makeText(this,it,Toast.LENGTH_SHORT).show();
-        }
-        splitEdit3.setOnInputFinishedListener {
-            Toast.makeText(this,it,Toast.LENGTH_SHORT).show();
-        }*/
+        splitEdit2.setOnInputListener(object : OnInputListener() {
+            override fun onInputFinished(content: String?) {
+                Toast.makeText(this@MainActivity,content,Toast.LENGTH_SHORT).show()
+            }
+
+        })
+
+        splitEdit3.setOnInputListener(object : OnInputListener() {
+            override fun onInputFinished(content: String?) {
+                Toast.makeText(this@MainActivity,content,Toast.LENGTH_SHORT).show()
+            }
+        })
 
     }
 }

@@ -31,7 +31,6 @@ dependencies {
 
 }
 
-apply plugin: 'maven'
 apply plugin: 'com.novoda.bintray-release'
 
 buildscript {
@@ -47,7 +46,7 @@ publish {
     userOrg = 'keeplearn'
     groupId = 'com.open.keeplearn'
     artifactId = 'SplitEditTextView'
-    publishVersion = '1.0.0'
+    publishVersion = '1.2.1'
     desc = 'A Library Of Android UI.'
     website = 'https://github.com/Chen-keeplearn/SplitEditTextView'
 }
