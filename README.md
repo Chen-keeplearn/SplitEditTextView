@@ -1,17 +1,17 @@
 # SplitEditTextView
 Android类似支付宝密码输入框，美团外卖验证码输入框等等支持下划线，方框，连体框样式；可设置光标、光标颜色，边框大小、颜色、圆角等等；设置密码显示的样式；不能满足需求也可自行将library里面的源码下载下来进行修改
-# 效果图
+## 效果图
 ![image](https://github.com/Chen-keeplearn/SplitEditTextView/blob/other/screenshot/SplitEditTextView_Screenshot_01.jpg)
 ![image](https://github.com/Chen-keeplearn/SplitEditTextView/blob/other/screenshot/SplitEditTextView_Screenshot_02.jpg)
 ![image](https://github.com/Chen-keeplearn/SplitEditTextView/blob/other/screenshot/SplitEditTextView_Gif.gif)
-# 如何使用
+## 如何使用
 **第一步: 依赖**
 
 首先将SplitEditTextView引入到您的项目中，在build.gradle文件中添加依赖，如下：
 ``` groovy
 dependencies {
    ...
-   implementation 'com.open.keeplearn:SplitEditTextView:1.2.0'  
+   implementation 'com.open.keeplearn:SplitEditTextView:1.2.1'  
 }
 ```
 **第二步: xml中使用**
@@ -95,7 +95,7 @@ splitEditTextView.setOnInputListener(new OnInputListener() {
     }
 });
 ```
-# 关于属性
+## 关于属性
 | 属性名称 | 属性说明 | 默认值 |
 |----------|---------|--------|
 | borderSize| 边框宽度 | 1dp |
@@ -113,3 +113,28 @@ splitEditTextView.setOnInputListener(new OnInputListener() {
 | cursorHeight| 光标高度 | 输入框高度的一半 |
 | cursorColor| 光标颜色 | Color.BLACK |
 | cursorDuration| 闪烁时长 | 500 |
+| underlineNormalColor| 下划线normal颜色 | Color.BLACK |
+| underlineFocusColor| 下划线focus颜色 | 未设置 |
+
+## 更新日志
+> #### 1.2.1
+> - 下划线输入框样式下，仿美团外卖，可设置下划线normal和focus两种颜色的区分
+> #### 1.2.0
+> - 新增有关光标的业务逻辑：光标闪烁、光标颜色、光标宽高
+
+## License
+```
+Copyright 2020 Chen-keeplearn
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
