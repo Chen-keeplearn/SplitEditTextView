@@ -66,4 +66,21 @@ android:focusableInTouchMode="true"
 
  </LinearLayout>
 ```
-# 完善中...
+# 属性说明
+| 属性名称 | 属性说明 | 默认值 |
+|----------|---------|--------|
+| borderSize| 边框宽度 | 1dp |
+| borderColor| 边框颜色 | Color.BLACK |
+| conerSize| 边框圆角大小 | 0 |
+| divisionLineSize| 分割线宽度 | 1dp |
+| divisionLineColor| 分割线颜色 | Color.BLACK |
+| circleRadius| 实心圆半径 | 5dp |
+| contentNumber| 输入内容数量 | 6 |
+| contentShowMode| 内容显示模式 | password |
+| spaceSize| 输入框间距 | 10dp |
+| inputBoxStyle| 输入框样式 | connectBox |
+| inputBoxSquare| 输入框是否正方形 | true |
+| cursorWidth| 光标宽度 | 2dp |
+| cursorHeight| 光标高度 | 输入框高度的一半 |
+| cursorColor| 光标颜色 | Color.BLACK |
+| cursorDuration| 闪烁时长 | 500 |
