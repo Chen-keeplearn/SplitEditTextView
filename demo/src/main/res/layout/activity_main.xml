@@ -40,14 +40,12 @@
         <com.al.open.SplitEditTextView
             android:id="@+id/splitEdit1"
             android:layout_width="match_parent"
-            android:layout_height="500dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:inputType="number"
             android:textColor="@color/colorPrimary"
             android:textSize="30sp"
             app:borderColor="@color/colorPrimary"
-            app:underlineNormalColor="#A8A8A8"
-            app:underlineFocusColor="@android:color/black"
             app:borderSize="2dp"
             app:contentNumber="4"
             app:contentShowMode="password"
@@ -56,18 +54,23 @@
             app:cursorWidth="6dp"
             app:inputBoxSquare="true"
             app:inputBoxStyle="singleBox"
-            app:spaceSize="20dp" />
+            app:spaceSize="20dp"
+            app:underlineFocusColor="@android:color/black"
+            app:underlineNormalColor="#A8A8A8" />
 
         <com.al.open.SplitEditTextView
             android:id="@+id/splitEdit2"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:inputType="number"
             android:textSize="25sp"
+            app:borderSize="2dp"
+            app:cornerSize="10dp"
             app:cursorColor="@color/colorPrimary"
             app:cursorHeight="20dp"
-            app:cornerSize="10dp"
             app:divisionLineColor="@color/colorAccent"
+            app:divisionLineSize="2dp"
             app:inputBoxStyle="connectBox" />
 
         <com.al.open.SplitEditTextView
@@ -75,13 +78,17 @@
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:layout_marginTop="20dp"
+            android:inputType="number"
+            android:textSelectHandleLeft="@android:color/transparent"
+            android:textSelectHandleRight="@android:color/transparent"
             app:borderColor="@color/colorPrimary"
             app:borderSize="2dp"
             app:contentNumber="5"
-            app:underlineFocusColor="@color/colorPrimary"
             app:contentShowMode="text"
             app:inputBoxStyle="underline"
-            app:spaceSize="20dp" />
+            app:spaceSize="20dp"
+            app:underlineFocusColor="#00ff00"
+            app:underlineNormalColor="@color/colorPrimary" />
 
     </LinearLayout>
 
