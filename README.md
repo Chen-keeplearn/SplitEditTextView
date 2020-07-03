@@ -1,10 +1,14 @@
 # SplitEditTextView
-Android类似支付宝密码输入框，美团外卖验证码输入框等等支持下划线，方框，连体框样式；可设置光标、光标颜色，边框大小、颜色、圆角等等；设置密码显示的样式；不能满足需求也可自行将library里面的源码下载下来进行修改
+Android类似支付宝**密码输入框**，美团外卖**验证码输入框** ;</br> 
+支持**下划线样式**，**单个输入框样式**，**带分割线输入框样式**;</br> 
+可设置**光标宽高**、**光标颜色**、**边框大小**、**边框颜色**、**圆角**、**下划线颜色**等等属性(具体可查看下方属性说明)，也可设置出入内容显示模式；</br> 
+不能满足需求也可自行将library里面的源码下载下来进行修改。</br> 
+源码里面的注释还是比较详细，另外写了一篇关于该库是如何实现的文章，有兴趣的可以阅读([文章链接](https://juejin.im/post/5efaddf25188252e397ec91d))
 ## 效果图
 ![image](https://github.com/Chen-keeplearn/SplitEditTextView/blob/other/screenshot/SplitEditTextView_Screenshot_01.jpg)
 ![image](https://github.com/Chen-keeplearn/SplitEditTextView/blob/other/screenshot/SplitEditTextView_Screenshot_02.jpg)
 ![image](https://github.com/Chen-keeplearn/SplitEditTextView/blob/other/screenshot/SplitEditTextView_Gif.gif)
-## 如何使用
+## 如何使用(可查看demo)
 **第一步: 依赖**
 
 首先将SplitEditTextView引入到您的项目中，在build.gradle文件中添加依赖，如下：
