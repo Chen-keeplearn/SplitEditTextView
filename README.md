@@ -99,6 +99,20 @@ splitEditTextView.setOnInputListener(new OnInputListener() {
     }
 });
 ```
+## 使用注意
+> #### 1.
+> - 使用setInputBoxStyle()动态设置输入框样式时，切换下换线样式，需要添加
+> - `app:underlineNormalColor="#A8A8A8" app:underlineFocusColor="@android:color/black"`两个属性，避免无效
+> - 绘制下划线样式的时，使用的是borderSize的大小，颜色是使用这两个属性的颜色值
+> #### 2.
+> - 长按事件，目前没有做控制
+> - 长按时，默认会弹出系统的`textSelectHandleLeft`和`textSelectHandleRight`(复制粘贴时选择文本的图标样式)
+> - 若不需要“复制粘贴”的功能，直接将长按事件屏蔽掉： </br> 
+ `android:longClickable="false"` 或 `setLongClickable(false);`
+> - 若需要，可将两个属性设置成： </br> 
+`android:textSelectHandleLeft="@android:color/transparent" android:textSelectHandleRight="@android:color/transparent"`
+
+
 ## 关于属性
 | 属性名称 | 属性说明 | 默认值 |
 |----------|---------|--------|
