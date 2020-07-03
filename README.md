@@ -5,9 +5,8 @@ Android类似支付宝**密码输入框**，美团外卖**验证码输入框** �
 不能满足需求也可自行将library里面的源码下载下来进行修改。</br> 
 源码里面的注释还是比较详细，另外写了一篇关于该库是如何实现的文章，有兴趣的可以阅读([文章链接](https://juejin.im/post/5efaddf25188252e397ec91d))
 ## 效果图
-![image](https://github.com/Chen-keeplearn/SplitEditTextView/blob/other/screenshot/SplitEditTextView_Screenshot_01.jpg)
-![image](https://github.com/Chen-keeplearn/SplitEditTextView/blob/other/screenshot/SplitEditTextView_Screenshot_02.jpg)
-![image](https://github.com/Chen-keeplearn/SplitEditTextView/blob/other/screenshot/SplitEditTextView_Gif.gif)
+![image](https://github.com/Chen-keeplearn/SplitEditTextView/blob/other/screenshot/SplitEditTextView_Screenshot_Gif_02.gif)
+![image](https://github.com/Chen-keeplearn/SplitEditTextView/blob/other/screenshot/SplitEditTextView_Screenshot_03.jpg)
 ## 如何使用(可查看demo)
 **第一步: 依赖**
 
