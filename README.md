@@ -110,7 +110,7 @@ splitEditTextView.setOnInputListener(new OnInputListener() {
 > - 若不需要“复制粘贴”的功能，直接将长按事件屏蔽掉： </br> 
  `android:longClickable="false"` 或 `setLongClickable(false);`
 > - 若需要，可将两个属性设置成： </br> 
-`android:textSelectHandleLeft="@android:color/transparent" android:textSelectHandleRight="@android:color/transparent"`
+`android:textSelectHandleLeft="@android:color/transparent"` `android:textSelectHandleRight="@android:color/transparent"`
 
 
 ## 关于属性
