@@ -1,6 +1,7 @@
 # SplitEditTextView
 Android类似支付宝**密码输入框**，美团外卖**验证码输入框** ；</br> 
 支持**下划线样式**，**单个输入框样式**，**带分割线输入框样式**；</br> 
+支持**长按粘贴**；</br>
 可设置**光标宽高**、**光标颜色**、**边框大小**、**边框颜色**、**圆角**、**下划线颜色**等等属性(具体可查看下方属性说明)，也可设置出入内容显示模式；</br> 
 不能满足需求也可自行将library里面的源码下载下来进行修改。</br> 
 源码里面的注释还是比较详细，另外写了一篇关于该库是如何实现的文章，有兴趣的可以阅读([文章链接](https://juejin.im/post/5efaddf25188252e397ec91d))
@@ -14,7 +15,7 @@ Android类似支付宝**密码输入框**，美团外卖**验证码输入框** �
 ``` groovy
 dependencies {
    ...
-   implementation 'com.open.keeplearn:SplitEditTextView:1.2.1'  
+   implementation 'com.open.keeplearn:SplitEditTextView:1.2.3'  
 }
 ```
 **第二步: xml中使用**
@@ -117,7 +118,7 @@ splitEditTextView.setOnInputListener(new OnInputListener() {
 |----------|---------|--------|
 | borderSize| 边框宽度 | 1dp |
 | borderColor| 边框颜色 | Color.BLACK |
-| conerSize| 边框圆角大小 | 0 |
+| corner_size| 边框圆角大小 | 0 |
 | divisionLineSize| 分割线宽度 | 1dp |
 | divisionLineColor| 分割线颜色 | Color.BLACK |
 | circleRadius| 实心圆半径 | 5dp |
@@ -134,6 +135,12 @@ splitEditTextView.setOnInputListener(new OnInputListener() {
 | underlineFocusColor| 下划线focus颜色 | 未设置 |
 
 ## 更新日志
+> #### 1.2.3
+> - 修改了与谷歌com.google.android.material:material包属性冲突，将cornerSize重新命名为corner_size
+> - 修复了一开始不能长按粘贴，需要在输入框内输入内容后，才能有长按粘贴效果的问题
+> - 去掉了光标的TextSelectHandle默认样式，长按“选择”的textSelectHandleLeft和textSelectHandleRight样式可查看使用注意项
+> #### 1.2.2
+> - -------------------------------
 > #### 1.2.1
 > - 下划线输入框样式下，仿美团外卖，可设置下划线normal和focus两种颜色的区分
 > #### 1.2.0
