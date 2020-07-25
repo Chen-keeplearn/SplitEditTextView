@@ -8,7 +8,7 @@
         <!--边框颜色-->
         <attr name="borderColor" format="color|reference" />
         <!--圆角大小-->
-        <attr name="cornerSize" format="dimension" />
+        <attr name="corner_size" format="dimension" />
         <!--分割线大小-->
         <attr name="divisionLineSize" format="dimension" />
         <!--分割线颜色-->

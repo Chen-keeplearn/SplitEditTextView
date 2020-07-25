@@ -28,7 +28,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-
 }
 
 apply plugin: 'com.novoda.bintray-release'
@@ -46,7 +45,7 @@ publish {
     userOrg = 'keeplearn'
     groupId = 'com.open.keeplearn'
     artifactId = 'SplitEditTextView'
-    publishVersion = '1.2.1'
+    publishVersion = '1.2.3'
     desc = 'A Library Of Android UI.'
     website = 'https://github.com/Chen-keeplearn/SplitEditTextView'
 }

@@ -7,14 +7,18 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.os.Build;
 import android.text.InputFilter;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.InflateException;
+import android.widget.TextView;
 
 import androidx.appcompat.widget.AppCompatEditText;
 
-public class SplitEditTextView extends AppCompatEditText {
+import java.lang.reflect.Field;
+
+public class SplitEditTextView extends AppCompatEditText{
     //密码显示模式：隐藏密码,显示圆形
     public static final int CONTENT_SHOW_MODE_PASSWORD = 1;
     //密码显示模式：显示密码
@@ -78,6 +82,10 @@ public class SplitEditTextView extends AppCompatEditText {
     public SplitEditTextView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
+    /*public SplitEditTextView(Context context, AttributeSet attrs) {
+        super(context, attrs, android.R.attr.editTextStyle);
+        initAttrs(context, attrs);
+    }*/
 
     public SplitEditTextView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
@@ -88,7 +96,7 @@ public class SplitEditTextView extends AppCompatEditText {
         TypedArray array = c.obtainStyledAttributes(attrs, R.styleable.SplitEditTextView);
         mBorderSize = array.getDimension(R.styleable.SplitEditTextView_borderSize, dp2px(1f));
         mBorderColor = array.getColor(R.styleable.SplitEditTextView_borderColor, Color.BLACK);
-        mCornerSize = array.getDimension(R.styleable.SplitEditTextView_cornerSize, 0f);
+        mCornerSize = array.getDimension(R.styleable.SplitEditTextView_corner_size, 0f);
         mDivisionLineSize = array.getDimension(R.styleable.SplitEditTextView_divisionLineSize, dp2px(1f));
         mDivisionColor = array.getColor(R.styleable.SplitEditTextView_divisionLineColor, Color.BLACK);
         mCircleRadius = array.getDimension(R.styleable.SplitEditTextView_circleRadius, dp2px(5f));
@@ -144,10 +152,33 @@ public class SplitEditTextView extends AppCompatEditText {
         setFocusableInTouchMode(true);
 
         //取消默认的光标
-        setCursorVisible(false);
+        //这里默认不设置该属性,不然长按粘贴有问题(一开始长按不能粘贴,输入内容就可以长按粘贴)
+        //setCursorVisible(false);
+
+        //设置透明光标,若是直接不显示光标的话,长按粘贴会没效果
+        /*try {
+            Field f = TextView.class.getDeclaredField("mCursorDrawableRes");
+            f.setAccessible(true);
+            f.set(this, 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
+        //设置光标的TextSelectHandle
+        //这里判断版本,10.0以及以上直接通过方法调用,以下通过反射设置
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            setTextSelectHandle(android.R.color.transparent);
+        } else {
+            //通过反射改变光标TextSelectHandle的样式
+            try {
+                Field f = TextView.class.getDeclaredField("mTextSelectHandleRes");
+                f.setAccessible(true);
+                f.set(this, android.R.color.transparent);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         //设置InputFilter,设置输入的最大字符长度为设置的长度
         setFilters(new InputFilter[]{new InputFilter.LengthFilter(mContentNumber)});
-        //setTextSelectHandleLeft(android.R.color.transparent);
     }
 
     @Override
@@ -553,4 +584,5 @@ public class SplitEditTextView extends AppCompatEditText {
             postDelayed(this, mCursorDuration);
         }
     }
+
 }

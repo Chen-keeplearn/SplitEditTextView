@@ -32,7 +32,6 @@ public class AEditText extends AppCompatEditText {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         //setFocusable(true);
-        setFocusableInTouchMode(true);
-        Log.i("yl--", "4444444444444444444444");
+        //setFocusableInTouchMode(true);
     }
 }
