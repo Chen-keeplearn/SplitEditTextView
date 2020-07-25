@@ -136,7 +136,7 @@ splitEditTextView.setOnInputListener(new OnInputListener() {
 
 ## 更新日志
 > #### 1.2.3
-> - 修改了与谷歌com.google.android.material:material包属性冲突，将cornerSize重新命名为corner_size
+> - 修改了与谷歌com.google.android.material:material包属性命名冲突，将cornerSize重新命名为corner_size
 > - 修复了一开始不能长按粘贴，需要在输入框内输入内容后，才能有长按粘贴效果的问题
 > - 去掉了光标的TextSelectHandle默认样式，长按“选择”的textSelectHandleLeft和textSelectHandleRight样式可查看使用注意项
 > #### 1.2.2
