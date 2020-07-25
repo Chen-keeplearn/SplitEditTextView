@@ -140,7 +140,6 @@ splitEditTextView.setOnInputListener(new OnInputListener() {
 > - 修复了一开始不能长按粘贴，需要在输入框内输入内容后，才能有长按粘贴效果的问题
 > - 去掉了光标的TextSelectHandle默认样式，长按“选择”的textSelectHandleLeft和textSelectHandleRight样式可查看使用注意项
 > #### 1.2.2
-> - -------------------------------
 > #### 1.2.1
 > - 下划线输入框样式下，仿美团外卖，可设置下划线normal和focus两种颜色的区分
 > #### 1.2.0
