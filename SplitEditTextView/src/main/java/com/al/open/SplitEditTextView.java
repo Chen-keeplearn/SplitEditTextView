@@ -3,10 +3,14 @@ package com.al.open;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.graphics.Shader;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.InputFilter;
 import android.util.AttributeSet;
@@ -18,7 +22,7 @@ import androidx.appcompat.widget.AppCompatEditText;
 
 import java.lang.reflect.Field;
 
-public class SplitEditTextView extends AppCompatEditText{
+public class SplitEditTextView extends AppCompatEditText {
     //密码显示模式：隐藏密码,显示圆形
     public static final int CONTENT_SHOW_MODE_PASSWORD = 1;
     //密码显示模式：显示密码
@@ -36,6 +40,7 @@ public class SplitEditTextView extends AppCompatEditText{
     private Paint mPaintContent;
     private Paint mPaintBorder;
     private Paint mPaintUnderline;
+    private Paint inputBackgroundPaint;
     //边框大小
     private Float mBorderSize;
     //边框颜色
@@ -56,6 +61,8 @@ public class SplitEditTextView extends AppCompatEditText{
     private float mSpaceSize;
     //输入框样式
     private int mInputBoxStyle;
+    private Drawable mInputBoxBackground;
+    private Drawable[] mInputBoxBackgroundDrawables;
     //字体大小
     private float mTextSize;
     //字体颜色
@@ -73,6 +80,7 @@ public class SplitEditTextView extends AppCompatEditText{
 
     private int mUnderlineFocusColor;//下划线输入样式下,输入框获取焦点时下划线颜色
     private int mUnderlineNormalColor;//下划线输入样式下,下划线颜色
+
 
     public SplitEditTextView(Context context) {
         this(context, null);
@@ -103,6 +111,7 @@ public class SplitEditTextView extends AppCompatEditText{
         mContentNumber = array.getInt(R.styleable.SplitEditTextView_contentNumber, 6);
         mContentShowMode = array.getInteger(R.styleable.SplitEditTextView_contentShowMode, CONTENT_SHOW_MODE_PASSWORD);
         mInputBoxStyle = array.getInteger(R.styleable.SplitEditTextView_inputBoxStyle, INPUT_BOX_STYLE_CONNECT);
+        mInputBoxBackground = array.getDrawable(R.styleable.SplitEditTextView_inputBoxBackground);
         mSpaceSize = array.getDimension(R.styleable.SplitEditTextView_spaceSize, dp2px(10f));
         mTextSize = array.getDimension(R.styleable.SplitEditTextView_android_textSize, sp2px(16f));
         mTextColor = array.getColor(R.styleable.SplitEditTextView_android_textColor, Color.BLACK);
@@ -139,6 +148,12 @@ public class SplitEditTextView extends AppCompatEditText{
         mPaintUnderline.setStrokeWidth(mBorderSize);
         mPaintUnderline.setColor(mUnderlineNormalColor);
 
+        if (mInputBoxBackground != null && mInputBoxBackground.getConstantState() != null) {
+            mInputBoxBackgroundDrawables = new Drawable[mContentNumber];
+            for (int i = 0; i < mContentNumber; i++) {
+                mInputBoxBackgroundDrawables[i] = mInputBoxBackground.getConstantState().newDrawable().mutate();
+            }
+        }
 
         //避免onDraw里面重复创建RectF对象,先初始化RectF对象,在绘制时调用set()方法
         //单个输入框样式的RectF
@@ -365,12 +380,25 @@ public class SplitEditTextView extends AppCompatEditText{
      * 所以算上边框 +(i+1)*2*mBorderSize
      */
     private void drawSingleStyle(Canvas canvas) {
+        float contentItemWidth = getContentItemWidth();
         for (int i = 0; i < mContentNumber; i++) {
             mRectFSingleBox.setEmpty();
-            float left = i * getContentItemWidth() + i * mSpaceSize + i * mBorderSize * 2 + mBorderSize / 2;
-            float right = i * mSpaceSize + (i + 1) * getContentItemWidth() + (i + 1) * 2 * mBorderSize - mBorderSize / 2;
+            float left = i * contentItemWidth + i * mSpaceSize + i * mBorderSize * 2 + mBorderSize / 2;
+            float right = left + contentItemWidth;
             //为避免在onDraw里面创建RectF对象,这里使用rectF.set()方法
             mRectFSingleBox.set(left, mBorderSize / 2, right, getHeight() - mBorderSize / 2);
+            if (mInputBoxBackgroundDrawables != null
+                    && mInputBoxBackgroundDrawables.length == mContentNumber
+                    && mInputBoxBackgroundDrawables[i] != null) {
+                // draw background image
+                // Draw the rounded rectangle with the background image
+                mInputBoxBackgroundDrawables[i].setBounds(
+                        (int) mRectFSingleBox.left,
+                        (int) mRectFSingleBox.top,
+                        (int) mRectFSingleBox.right,
+                        (int) mRectFSingleBox.bottom);
+                mInputBoxBackgroundDrawables[i].draw(canvas);
+            }
             canvas.drawRoundRect(mRectFSingleBox, mCornerSize, mCornerSize, mPaintBorder);
         }
     }

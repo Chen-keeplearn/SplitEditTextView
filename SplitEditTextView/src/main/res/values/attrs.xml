@@ -35,6 +35,7 @@
             <!--下划线样式-->
             <enum name="underline" value="3" />
         </attr>
+        <attr name="inputBoxBackground" format="reference" />
         <!--密码字体颜色-->
         <attr name="android:textColor" />
         <!--密码字体大小-->

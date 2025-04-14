@@ -44,8 +44,8 @@
             android:layout_marginTop="20dp"
             android:textColor="@color/colorPrimary"
             android:textSize="30sp"
-            app:borderColor="@color/colorPrimary"
-            app:borderSize="2dp"
+            app:borderColor="@android:color/transparent"
+            app:borderSize="0dp"
             app:contentNumber="4"
             app:contentShowMode="password"
             app:corner_size="10dp"
@@ -53,6 +53,7 @@
             app:cursorWidth="6dp"
             app:inputBoxSquare="true"
             app:inputBoxStyle="singleBox"
+            app:inputBoxBackground="@drawable/custom_edit_dev_name_normal"
             app:spaceSize="20dp"
             app:underlineFocusColor="@android:color/black"
             app:underlineNormalColor="#A8A8A8" />
@@ -70,7 +71,8 @@
             app:cursorHeight="20dp"
             app:divisionLineColor="@color/colorAccent"
             app:divisionLineSize="2dp"
-            app:inputBoxStyle="connectBox" />
+            app:inputBoxStyle="connectBox"
+            android:visibility="invisible"/>
 
         <com.al.open.SplitEditTextView
             android:id="@+id/splitEdit3"
@@ -87,7 +89,8 @@
             app:inputBoxStyle="underline"
             app:spaceSize="20dp"
             app:underlineFocusColor="#00ff00"
-            app:underlineNormalColor="@color/colorPrimary" />
+            app:underlineNormalColor="@color/colorPrimary"
+            android:visibility="invisible"/>
 
     </LinearLayout>
 
